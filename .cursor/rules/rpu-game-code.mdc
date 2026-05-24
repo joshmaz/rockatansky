@@ -1,0 +1,13 @@
+---
+description: RPU and RoadKings sketch coding conventions
+globs: "**/*.{ino,h,cpp}"
+alwaysApply: false
+---
+
+# RPU game code
+
+- Edit game rules in `RoadKings.ino`; hardware IDs in `RoadKings.h`.
+- Avoid editing `RPU.cpp` unless fixing shared OS behavior.
+- Road Kings is `RPU_MPU_ARCHITECTURE` 15 — no Bally/Stern `ARCHITECTURE<10` switch-trigger solenoid arrays.
+- Do not hardcode install-specific values; use `RPU_Config.h` and document in CONFIGURATION.md.
+- Road Kings has no sling switches; do not expect `SW_LEFT_SLING` / `SW_RIGHT_SLING` closures.

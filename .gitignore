@@ -1,0 +1,15 @@
+# Arduino build
+*.hex
+*.elf
+*.eep
+build/
+.arduino*/
+
+# Editor / OS
+.DS_Store
+*.swp
+*~
+desktop.ini
+
+# Local install overrides (optional)
+# docs/MY_INSTALL.local.md

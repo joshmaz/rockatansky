@@ -1,16 +1,12 @@
 /**************************************************************************
-    This pinball Example Machine code is distributed in the hope that it
-    will be useful, but WITHOUT ANY WARRANTY; without even the implied 
-    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    See <https://www.gnu.org/licenses/>. 
+    Road Kings RPU codeset (Max Rockatansky fork). Based on ExampleMachine.
+    See <https://www.gnu.org/licenses/>.
 */
 
 #include "RPU_Config.h"
 #include "RPU.h"
 #include "DropTargets.h"
-#include "ExampleMachine.h"
+#include "RoadKings.h"
 #include "SelfTestAndAudit.h"
 #include "AudioHandler.h"
 #include "LampAnimations.h"
@@ -1742,9 +1738,9 @@ int InitGamePlay(boolean curStateChanged) {
     return MACHINE_STATE_INIT_GAMEPLAY;
   }
 */
-  if (RPU_ReadSingleSwitchState(SW_SAUCER)) {
+  if (RPU_ReadSingleSwitchState(SW_LEFT_TROUGH)) {
     if (CurrentTime > (SaucerEjectTime+2500)) {
-      RPU_PushToSolenoidStack(SOL_SAUCER, 12, true);
+      RPU_PushToSolenoidStack(SOL_LEFT_TROUGH_KICK, 12, true);
       SaucerEjectTime = CurrentTime;
     }
   }
@@ -1783,6 +1779,7 @@ int InitGamePlay(boolean curStateChanged) {
   }
   memset(CurrentScores, 0, 4 * sizeof(unsigned long));
 
+  RPU_SetLampState(LAMP_HEAD_GAME_OVER, 0);
   SamePlayerShootsAgain = false;
   CurrentBallInPlay = 1;
   CurrentNumPlayers = 1;
@@ -1816,6 +1813,7 @@ int InitNewBall(bool curStateChanged) {
 
     RPU_SetDisplayBallInPlay(CurrentBallInPlay);
     RPU_SetLampState(LAMP_HEAD_TILT, 0);
+    RPU_SetLampState(LAMP_HEAD_BALL_IN_PLAY, 1);
 
     if (BallSaveNumSeconds > 0) {
       RPU_SetLampState(LAMP_SHOOT_AGAIN, 1, 0, 500);
@@ -2370,7 +2368,7 @@ int HandleSystemSwitches(int curState, byte switchHit) {
 //      MoveBallFromOutholeToRamp(true);
       break;
     case SW_PLUMB_TILT:
-//    case SW_ROLL_TILT:
+    case SW_ROLL_TILT:
     case SW_PLAYFIELD_TILT:
       // This should be debounced
       if ((CurrentTime - LastTiltWarningTime) > TILT_WARNING_DEBOUNCE_TIME) {
@@ -2417,14 +2415,6 @@ void HandleGamePlaySwitches(byte switchHit) {
 
   switch (switchHit) {
 
-    case SW_LEFT_SLING:
-    case SW_RIGHT_SLING:
-      CurrentScores[CurrentPlayer] += PlayfieldMultiplier * 10;
-//      PlaySoundEffect(SOUND_EFFECT_SLING_SHOT);
-      LastSwitchHitTime = CurrentTime;
-      if (BallFirstSwitchHitTime == 0) BallFirstSwitchHitTime = CurrentTime;
-      break;
-
     case SW_DROP_1:
     case SW_DROP_2:
     case SW_DROP_3:
@@ -2433,17 +2423,39 @@ void HandleGamePlaySwitches(byte switchHit) {
       if (BallFirstSwitchHitTime == 0) BallFirstSwitchHitTime = CurrentTime;
       break;
 
-    case SW_SPINNER:
-      CurrentScores[CurrentPlayer] += 100 * PlayfieldMultiplier;
-//      PlaySoundEffect(SOUND_EFFECT_SPINNER);
+    case SW_DROP_TARGET:
+      CurrentScores[CurrentPlayer] += PlayfieldMultiplier * 500;
       LastSwitchHitTime = CurrentTime;
       if (BallFirstSwitchHitTime == 0) BallFirstSwitchHitTime = CurrentTime;
       break;
 
-    case SW_SAUCER:
-      CurrentScores[CurrentPlayer] += PlayfieldMultiplier * 1000;
-//      PlaySoundEffect(SOUND_EFFECT_SAUCER);
-      RPU_PushToTimedSolenoidStack(SOL_SAUCER, 16, CurrentTime+1000, true);
+    case SW_TOP_JET:
+    case SW_LEFT_JET:
+    case SW_RIGHT_JET:
+    case SW_BOTTOM_JET:
+      CurrentScores[CurrentPlayer] += PlayfieldMultiplier * 100;
+      LastSwitchHitTime = CurrentTime;
+      if (BallFirstSwitchHitTime == 0) BallFirstSwitchHitTime = CurrentTime;
+      break;
+
+    case SW_R_TARGET:
+    case SW_O_TARGET:
+    case SW_A_TARGET:
+    case SW_D_TARGET:
+    case SW_K_TARGET:
+    case SW_I_TARGET:
+    case SW_N_TARGET:
+    case SW_G_TARGET:
+    case SW_S_TARGET:
+      CurrentScores[CurrentPlayer] += PlayfieldMultiplier * 50;
+      LastSwitchHitTime = CurrentTime;
+      if (BallFirstSwitchHitTime == 0) BallFirstSwitchHitTime = CurrentTime;
+      break;
+
+    case SW_RIGHT_RAMP_ENTER:
+    case SW_CENTER_RAMP_ENTER:
+    case SW_CENTER_RAMP_EXIT:
+      CurrentScores[CurrentPlayer] += PlayfieldMultiplier * 200;
       LastSwitchHitTime = CurrentTime;
       if (BallFirstSwitchHitTime == 0) BallFirstSwitchHitTime = CurrentTime;
       break;
@@ -2490,6 +2502,8 @@ int RunGamePlayMode(int curState, boolean curStateChanged) {
           RPU_SetDisplay(count, CurrentScores[count], true, 2);
         }
 
+        RPU_SetLampState(LAMP_HEAD_BALL_IN_PLAY, 0);
+        RPU_SetLampState(LAMP_HEAD_GAME_OVER, 1);
         returnState = MACHINE_STATE_MATCH_MODE;
       }
       else returnState = MACHINE_STATE_INIT_NEW_BALL;
