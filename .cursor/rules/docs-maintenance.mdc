@@ -1,0 +1,12 @@
+---
+description: Keep docs in sync with code changes
+globs: "docs/**"
+alwaysApply: false
+---
+
+# Documentation maintenance
+
+- Switch/lamp/sol changes → update [docs/ROAD_KINGS.md](ROAD_KINGS.md) and [RoadKings.h](../RoadKings.h).
+- `RPU_Config.h` default changes → update [docs/CONFIGURATION.md](CONFIGURATION.md).
+- Bench verification → [docs/MY_INSTALL.md](MY_INSTALL.md) only, not generic HARDWARE.md.
+- PDF originals stay in [Road_Kings_Docs/](../Road_Kings_Docs/); do not duplicate Pinrepair PDFs into docs/.

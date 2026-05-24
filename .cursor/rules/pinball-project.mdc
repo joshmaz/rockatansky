@@ -1,0 +1,12 @@
+---
+description: Road Kings RPU project scope and documentation tiers
+alwaysApply: true
+---
+
+# Rockatansky / Road Kings RPU
+
+- Open **Road Kings** System 11 RPU codeset; Max Rockatansky theme is optional ([docs/RULES_ROADMAP.md](docs/RULES_ROADMAP.md)).
+- Machine mappings: [docs/ROAD_KINGS.md](docs/ROAD_KINGS.md) + [RoadKings.h](RoadKings.h).
+- Installer choices: [docs/CONFIGURATION.md](docs/CONFIGURATION.md) — not [docs/MY_INSTALL.md](docs/MY_INSTALL.md).
+- Agents start at [AGENTS.md](AGENTS.md) and [docs/README.md](docs/README.md).
+- Minimal playable ball cycle before custom theme or full original rules.
